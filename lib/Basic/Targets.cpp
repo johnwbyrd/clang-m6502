@@ -7194,6 +7194,59 @@ validateAsmConstraint(const char *&Name,
   }
 }
 
+class M6502TargetInfo : public TargetInfo {
+public:
+  // TODO: support sub-targets for Apple II, Atari, Commodore 64, NES, etc.
+  M6502TargetInfo(const llvm::Triple &Triple, const TargetOptions &Opts)
+      : TargetInfo(Triple) {
+    BigEndian = false;
+    TLSSupported = false;
+    NoAsmVariants = true;
+    PointerWidth = 16;
+    IntWidth = 16;
+    PointerAlign = IntAlign = LongAlign = LongLongAlign = SuitableAlign =
+        DefaultAlignForAttributeAligned = HalfAlign = FloatAlign =
+        DoubleAlign = LongDoubleAlign = Float128Align
+        = 8;
+    SizeType = UnsignedInt;
+    PtrDiffType = SignedInt;
+    IntPtrType = SignedInt;
+    Char32Type = UnsignedLong;
+    resetDataLayout("e-p:16:8-n8");
+  }
+  void getTargetDefines(const LangOptions &Opts,
+                        MacroBuilder &Builder) const override {
+    defineCPUMacros(Builder, "m6502");
+    // FIXME: use an existing #define name if one has been established by other compilers.
+    // See <http://cc65.github.io/doc/cc65.html#s6>
+  }
+  ArrayRef<Builtin::Info> getTargetBuiltins() const override {
+    // FIXME: implement
+    return None;
+  }
+  ArrayRef<const char *> getGCCRegNames() const override {
+    // No GCC reg names.
+    return None;
+  }
+  ArrayRef<TargetInfo::GCCRegAlias> getGCCRegAliases() const override {
+    // No aliases.
+    return None;
+  }
+  bool validateAsmConstraint(const char *&Name,
+                             TargetInfo::ConstraintInfo &info) const override {
+    // No target constraints for now.
+    return false;
+  }
+  const char *getClobbers() const override {
+    // FIXME: Is this really right?
+    return "";
+  }
+  BuiltinVaListKind getBuiltinVaListKind() const override {
+    // FIXME: implement
+    return TargetInfo::CharPtrBuiltinVaList;
+  }
+};
+
 class MSP430TargetInfo : public TargetInfo {
   static const char *const GCCRegNames[];
 
@@ -8674,6 +8727,9 @@ static TargetInfo *AllocateTarget(const llvm::Triple &Triple,
   case llvm::Triple::bpfeb:
   case llvm::Triple::bpfel:
     return new BPFTargetInfo(Triple, Opts);
+
+  case llvm::Triple::m6502:
+    return new M6502TargetInfo(Triple, Opts);
 
   case llvm::Triple::msp430:
     return new MSP430TargetInfo(Triple, Opts);

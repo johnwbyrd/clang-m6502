@@ -44,11 +44,7 @@ public:
     resetDataLayout("e-p:16:8-n8");
   }
   void getTargetDefines(const LangOptions &Opts,
-                        MacroBuilder &Builder) const override {
-    defineCPUMacros(Builder, "m6502");
-    // FIXME: use an existing #define name if one has been established by other compilers.
-    // See <http://cc65.github.io/doc/cc65.html#s6>
-  }
+                        MacroBuilder &Builder) const override;
   ArrayRef<Builtin::Info> getTargetBuiltins() const override {
     // FIXME: implement
     return None;

@@ -242,6 +242,9 @@ TargetInfo *AllocateTarget(const llvm::Triple &Triple,
   case llvm::Triple::bpfel:
     return new BPFTargetInfo(Triple, Opts);
 
+  case llvm::Triple::m6502:
+    return new M6502TargetInfo(Triple, Opts);
+
   case llvm::Triple::msp430:
     return new MSP430TargetInfo(Triple, Opts);
 
